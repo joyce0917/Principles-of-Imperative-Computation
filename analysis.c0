@@ -1,0 +1,61 @@
+#use <args>
+#use <conio>
+
+int main(){
+    args_t args = args_parse();
+    int argc = args->argc;
+    string[] argv = args->argv;
+
+    bundle_t vocab_bundle = read_words(argv[0]);
+    string[] vocab_array = string_bundle_array(vocab_bundle);
+    int vocab_length = string_bundle_length(vocab_bundle);
+    int[] freq = alloc_array(int,vocab_length);
+
+    count_vocab(vocab_array,freq,vocab_length,argv[1],true);
+    sort_by_freq(vocab_array,freq,vocab_length);
+
+    println("The four most common words in the text corpus are:");
+    for (int i=1;i<5;i++){
+        printint(i);
+        print(".   ");
+        print(vocab_array[vocab_length-i]);
+        print("   (appears   ");
+        printint(freq[vocab_length-i]);
+        print("   times)\n");
+    }
+    print("\n\n");
+    println("These words appeared 128 times in the text corpus:  ");
+    for (int j=0; j<vocab_length; j++){
+        if (freq[j]==128){
+            print(vocab_array[j]);
+            print("   ");
+        }
+    }
+    print("\n\n");
+    int singletons=0;
+    for (int k=0;k<vocab_length;k++){
+        if (freq[k]==1){
+            singletons+=1;
+        }
+    }
+
+    print("There are   ");
+    printint(singletons);
+    print("   singletons in the corpus\n\n");
+
+    int distinct=0;
+    int prev=freq[0];
+    for (int z=1;z<vocab_length;z++){
+        if(prev!=freq[z]){
+            distinct+=1;
+        }
+        prev=freq[z];
+    }
+    if (freq[vocab_length-1]!=freq[vocab_length-2]){
+        distinct+=1;
+    }
+    print("There are   ");
+    printint(distinct);
+    print("   distinct frequency counts in the corpus.\n\n");
+    return 0;
+}

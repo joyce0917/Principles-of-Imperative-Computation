@@ -1,0 +1,40 @@
+int[] apply_mask(pixel[] pixels, int width, int height, int[] mask, int maskwidth)
+//@requires is_valid_imagesize(width,height);
+//@requires \length(mask)==maskwidth*maskwidth;
+//@requires \length(pixels)==width*height;
+//@requires maskwidth%2==1 && 0 < maskwidth;
+//@ensures \length(\result)==\length(pixels);
+{
+	int[] masked = alloc_array(int,width*height);
+	for (int r=0;r<height;r++)
+	//@loop_invariant 0<=r && r<=height;	
+	{
+		for (int c=0;c<width;c++)
+		//@loop_invariant 0<=c && c<=width;
+		{	
+			int total = 0;
+			for (int mr=-maskwidth/2;mr<=maskwidth/2;mr++)
+			//@loop_invariant -maskwidth/2<=mr && mr<=maskwidth/2+1;
+			{
+				for (int mc=-maskwidth/2;mc<=maskwidth/2;mc++)
+				//@loop_invariant -maskwidth/2<=mc && mc<=maskwidth/2+1;
+				{
+					if (0<=r+mr && r+mr<height && 0<=c+mc && c+mc<width)
+					{
+						int index = get_index(r+mr,c+mc,width,height);
+						int maskindex = get_index(mr+maskwidth/2,
+							mc+maskwidth/2,maskwidth,maskwidth);
+						int red = get_red(pixels[index]);
+						int green = get_green(pixels[index]);
+						int blue = get_blue(pixels[index]);
+						total+=((red+green+blue)/3)*mask[maskindex];
+					}
+				}
+			}
+			int i=get_index(r,c,width,height);
+			masked[i]=total;
+		}
+	}
+	return masked;
+
+}

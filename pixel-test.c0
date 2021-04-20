@@ -1,0 +1,29 @@
+int main() {
+
+  pixel p1 = make_pixel(0x0F,0xFA,0x00,0x03);
+  assert(get_red(p1)==0xFA);
+  assert(get_green(p1)==0x00);
+  assert(get_blue(p1)==0x03);
+  assert(get_alpha(p1)==0x0F);
+  
+  pixel p2 = make_pixel(0x01,0x0F,0x30,0xEE);
+  assert(get_red(p2)==0x0F);
+  assert(get_green(p2)==0x30);
+  assert(get_blue(p2)==0xEE);
+  assert(get_alpha(p2)==0x01);
+
+  pixel p3 = make_pixel(0xFC,0x2E,0x33,0xA0);
+  assert(get_red(p3)==0x2E);
+  assert(get_green(p3)==0x33);
+  assert(get_blue(p3)==0xA0);
+  assert(get_alpha(p3)==0xFC);
+
+  pixel p4 = make_pixel(0x80,0xFC,0x39,0x99);
+  assert(get_red(p4)==0xFC);
+  assert(get_green(p4)==0x39);
+  assert(get_blue(p4)==0x99);
+  assert(get_alpha(p4)==0x80);
+
+  return 0;
+
+}

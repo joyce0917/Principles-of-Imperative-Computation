@@ -1,0 +1,66 @@
+bool is_precstack(dict_t D, stack_t S)
+//@requires D != NULL && S != NULL;
+{
+    stack_t temp = stack_new();
+    int pres = 1<<31 - 1;
+    while (!stack_empty(S)){
+        string str = pop(S);
+        int next = dict_lookup(D,str);
+        if (next>=pres){
+            return false;
+        }push(temp, str);
+        pres = next;
+    }while (!stack_empty(temp)){
+        push(S,pop(temp));
+    }return true;
+}
+
+queue_t parse(dict_t D, queue_t input)
+//@requires D != NULL && input != NULL;
+//@ensures \result == NULL || queue_empty(input);
+{
+    queue_t output = queue_new();
+    stack_t operator = stack_new();
+    if(queue_empty(input)) return NULL;
+    int b=1;
+    while (!queue_empty(input)){
+        string s= deq(input);
+        int a = dict_lookup(D,s);
+        if (a==-1){
+            if (b==0){
+                return NULL;
+            }
+            enq(output,s);
+            b=0;
+        }else{
+            if (b==1){
+                return NULL;
+            }
+            if (stack_empty(operator)){
+                push(operator,s);
+            }
+            else{
+                string topop=pop(operator);
+                while (dict_lookup(D,topop)>=a && !(stack_empty(operator)))
+                //@loop_invariant(is_precstack(D, operator));
+                {
+                    enq(output,topop);
+                    topop=pop(operator);
+                }
+                if (dict_lookup(D,topop)>=a){
+                    enq(output,topop);
+                    push(operator,s);
+                }else if(dict_lookup(D,topop)<a){
+                    push(operator,topop);
+                    push(operator,s);                 
+                }
+            }b=1;
+        }
+    }while(!stack_empty(operator)){
+        enq(output,pop(operator));
+    }
+    return output;
+}
+
+
+

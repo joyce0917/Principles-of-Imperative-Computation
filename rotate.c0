@@ -1,0 +1,20 @@
+pixel[] rotate(pixel[] pixels, int width, int height)
+//@requires is_valid_imagesize(width,height);
+//@requires \length(pixels)==width*height;
+//@requires width==height;
+//@ensures \length(\result)==4*width*height;
+{
+	pixel[] rotation = alloc_array(pixel,4*width*height);
+	for (int i =0; i<width*height; i++)
+	//@loop_invariant \length(rotation)==4*width*height;
+	//@loop_invariant 0<=i && i<=width*height;
+	{
+		int row = get_row(i,width,height);
+		int col = get_column(i,width,height);
+		rotation[row*(2*width)+width+col] = pixels[i];
+		rotation[(width-col-1)*(2*width)+row] = pixels[i];
+		rotation[(2*width)*(2*height-row)-(width+col)-1] = pixels[i];
+		rotation[(2*width)*(height+col+1)-row-1] = pixels[i];
+	}
+	return rotation;
+}

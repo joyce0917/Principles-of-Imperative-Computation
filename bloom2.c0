@@ -1,0 +1,146 @@
+#use <string>
+#use <util>
+#use <rand>
+#use <conio>
+
+int hash1(string s1){
+  int value;
+  int size = string_length(s1);
+  if(size == 0) return 0;
+
+  char[] characters = string_to_chararray(s1);
+  int sum = 0;
+  for(int i = 0; i < size-1; i++)
+  {
+     int num1 = char_ord(characters[i]);
+     sum = 31 * (sum + num1);
+
+  }
+  return sum + char_ord(characters[size-1]);
+}
+
+int someF(int x){return 1664525 * x + 1013904223;}
+
+int hash2(string s1){
+  int value;
+  int size = string_length(s1);
+  if(size == 0) return 0;
+
+  char[] characters = string_to_chararray(s1);
+  int sum = 0;
+  for(int i = 0; i < size; i++)
+  {
+     int num1 = char_ord(characters[i]);
+     sum = someF(sum + num1);
+  }
+  return sum%1000000;
+}
+
+
+
+int someF2(int x){return 903481591 * x + 204802;}
+
+int hash3(string s1){
+  int value;
+  int size = string_length(s1);
+  if(size == 0) return 0;
+
+  char[] characters = string_to_chararray(s1);
+  int sum = 0;
+  for(int i = 0; i < size; i++)
+  {
+     int num1 = char_ord(characters[i]);
+     sum = someF2(sum + num1);
+  }
+  return sum%3000000;
+}
+
+
+bool get_bit(int[] A, int i)
+/*@requires 0 <= i && i/32 < \length(A); @*/
+{
+  int a=((A[i/32])>>i%32)&0x00000001;
+  if (a==0) return false;
+  else if (a==1 || a==-1) return true;
+  else return true;
+}
+
+
+void set_bit(int[] A, int i)
+/*@requires 0 <= i && i/32 < \length(A); @*/
+/*@ensures get_bit(A, i); @*/ 
+{
+  int a=1<<(i%32);
+  A[i/32]=A[i/32]|a;
+  return;
+}
+
+
+
+
+typedef struct bloom_filter* bloom_t;
+struct bloom_filter {
+  int[] data;
+  int limit; //limit == \length(data)
+};
+
+
+bool is_bloom(bloom_t B)
+{
+  if (B == NULL) return false;
+  else if (B->limit==0) return false;
+  else {
+    //@assert \length(B->data)==B->limit;
+    return true;    
+  }
+}
+
+bloom_t bloom_new(int table_size) 
+//@requires table_size > 0;
+//@ensures is_bloom(\result);
+{ 
+  int len;
+  if (table_size%32==0){
+    len=table_size/32;  
+  }else{
+    len=table_size/32+1;
+  }
+  bloom_t A = alloc(struct bloom_filter);
+  A->data=alloc_array(int,len);
+  for (int i=0;i<len;i++){
+    A->data[i]=0;
+  }
+  A->limit=len;
+  return A; 
+}
+
+
+bool bloom_contains(bloom_t B, string x) 
+//@requires is_bloom(B);
+{ 
+  int hash1=hash1(x);
+  int hash2=hash2(x);
+  int hash3=hash3(x);
+  return (get_bit(B->data,abs(hash1%(32*B->limit)))
+            && get_bit(B->data,abs(hash2%(32*B->limit)))
+                && get_bit(B->data,abs(hash3%(32*B->limit))));
+}
+
+void bloom_add(bloom_t B, string x) 
+//@requires is_bloom(B);
+//@ensures is_bloom(B);
+//@ensures bloom_contains(B, x); 
+{ 
+  int hash1=hash1(x);
+  int hash2=hash2(x);
+  int hash3=hash3(x);
+  set_bit(B->data,abs(hash1%(32*B->limit)));
+  set_bit(B->data,abs(hash2%(32*B->limit)));
+  set_bit(B->data,abs(hash3%(32*B->limit)));
+  return;
+}
+
+
+
+
+

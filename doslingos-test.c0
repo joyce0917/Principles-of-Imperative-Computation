@@ -1,0 +1,55 @@
+#use <string>
+void counttest1(){
+  string[] vocab = parse_tokens("a b c d e f");
+  int size = 6;
+  int[] freq = alloc_array(int, size);
+  string directory = "text1.txt";
+
+  assert(count_vocab(vocab,freq,size,directory,true)==3);
+  assert(freq[0] == 3);
+  assert(freq[3] == 0);
+  sort_by_freq(vocab,freq,size);
+  assert(string_equal(vocab[size - 1] ,"a"));
+  assert(string_equal(vocab[0],"d"));
+  assert(string_equal(vocab[1],"b"));
+  assert(string_equal(vocab[2],"f"));
+  assert(freq[0] == 0);
+  assert(freq[2] == 1);
+  assert(freq[4] == 2);
+}
+
+void counttest2(){
+  string[] vocab = parse_tokens("1 2 3 4 5 6 7 8");
+  int size = 8;
+  int[] freq = alloc_array(int, size);
+  string directory = "text2.txt";
+
+  assert(count_vocab(vocab,freq,size,directory,false) == 2);
+  assert(freq[0] == 1);
+  assert(freq[3] == 1);
+  sort_by_freq(vocab,freq,size);
+  assert(string_equal(vocab[size - 1] ,"8"));
+  assert(string_equal(vocab[0],"1"));
+  assert(string_equal(vocab[1],"2"));
+  assert(string_equal(vocab[2],"3"));
+  assert(string_equal(vocab[4],"5"));
+  assert(freq[0] == 1);
+  assert(freq[2] == 1);
+  assert(freq[4] == 1);
+}
+
+void counttest3(){
+  string[] vocab = parse_tokens("");
+  int size = 0;
+  int[] freq = alloc_array(int, size);
+  string directory = "text2.txt";
+
+  assert(count_vocab(vocab,freq,size,directory,false) ==10);
+}
+
+int main(){
+    counttest1();
+    counttest2();
+    counttest3();
+    return 0;
+}

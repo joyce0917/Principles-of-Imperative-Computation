@@ -1,0 +1,193 @@
+/*
+ * Ropes
+ * 
+ * 15-122 Principles of Imperative Computation
+ */
+
+#use <conio>
+#use <string>
+#use <util>
+
+/************************************/
+/* Interface (leave this in place!) */
+/************************************/
+
+// typedef _______ rope_t;
+typedef struct rope_node* rope_t;
+
+int    rope_length(rope_t R)
+  /*@ensures \result >= 0; @*/ ;
+rope_t rope_new(string s)
+  /*@ensures rope_length(\result) == string_length(s); @*/ ;
+rope_t rope_join(rope_t R, rope_t S)
+  /*@requires rope_length(R) <= int_max() - rope_length(S); @*/ 
+  /*@ensures rope_length(\result) == rope_length(R) + rope_length(S); @*/ ;
+string rope_tostring(rope_t R)
+  /*@ensures string_length(\result) == rope_length(R); @*/ ;
+char   rope_charat(rope_t R, int i) 
+  /*@requires 0 <= i && i < rope_length(R); @*/ ;
+rope_t rope_sub(rope_t R, int lo, int hi)
+  /*@requires 0 <= lo && lo <= hi && hi <= rope_length(R); @*/ 
+  /*@ensures rope_length(\result) == hi - lo; @*/ ;
+void   rope_reduce(rope_t[] A, int n)
+  /*@requires n == \length(A); @*/ ;
+
+/***********************************/
+/* Implementation (edit this part) */
+/***********************************/
+
+typedef struct rope_node rope;
+struct rope_node {
+    int len;
+    rope* left;
+    rope* right;
+    string data;
+};
+
+
+
+bool is_rope(rope* R)
+{
+    if (R==NULL) return true;
+    if (string_length(R->data)!=0&&R->left==NULL
+        &&R->right==NULL
+        &&string_length(R->data)==R->len)
+        return true;
+    if (string_length(R->data)==0&&R->left!=NULL 
+        && R->right!=NULL
+        &&R->len == R->left->len + R->right->len
+        &&is_rope(R->left)&&is_rope(R->right))
+        return true;
+    return false;
+}
+
+// bool circularity(rope* R)
+// {
+
+// }
+
+rope_t rope_new(string s)
+//@requires string_length(s)!=0;
+{
+    rope_t new=alloc(struct rope_node);
+    new->len=string_length(s);
+    new->data=s;
+    new->left=NULL;
+    new->right=NULL;
+    return new;
+}
+
+int rope_length(rope_t R)
+//@requires is_rope(R);
+{
+    if (R==NULL) return 0;
+    else return R->len;
+}
+
+rope_t rope_join(rope_t R, rope_t S)
+//@requires is_rope(R) && is_rope(S);
+/*@requires rope_length(R) <= int_max() - rope_length(S); @*/ 
+{
+    rope_t new = alloc(struct rope_node);
+    new->len=rope_length(R)+rope_length(S);
+    new->left=R;
+    new->right=S;
+    return new;
+}
+
+char rope_charat(rope_t R, int i)
+/*@requires 0 <= i && i < rope_length(R); @*/ 
+{
+    if (string_length(R->data)!=0)
+        return string_charat(R->data,i);
+    else{   
+        int len = R->left->len;
+        if (len <= i)
+        {
+            return rope_charat(R->right,i-len);
+        }else{
+            return rope_charat(R->left,i);
+        }
+    }
+}
+
+string rope_tostring(rope_t R)
+{
+    if (string_length(R->data)!=0) return R->data;
+    else{
+        return string_join(rope_tostring(R->left),rope_tostring(R->right));
+    }
+}
+
+rope_t rope_sub(rope_t R, int lo, int hi)
+/*@requires 0 <= lo && lo <= hi && hi <= rope_length(R); @*/
+{
+    if (lo==0 && hi==R->len) return R;
+    else if (string_length(R->data)!=0)
+    {
+        return rope_new(string_sub(R->data,lo,hi));
+    }else{
+        int len = R->left->len;
+        if (len>lo&&len<hi){
+            rope_t new = alloc(struct rope_node);
+            new->len=hi-lo;
+            new->left=rope_sub(R->left,lo,len);
+            new->right=rope_sub(R->right,0,hi-len);
+            return new;
+        }else if (len>lo&&len>=hi){
+            return rope_sub(R->left,lo,hi);
+        }else{
+            return rope_sub(R->right,lo-len,hi-len);
+        }
+    }
+}
+
+
+// rope_t rope_reduce(rope_t[] A,int a)
+// {
+//     hdict_t new=hdict_new(10, &key_equiv_fn , &key_hash_fn);
+//     for (int i=0, i<a,i++){
+//         rope_t C=A[i];
+//         while (C!=NULL){
+//             rope_reduce2(C,new);
+//             C=A
+
+//         }
+//     }
+// }
+
+
+// rope_t rope_reduce2(rope_t A,hdict_t D)
+// {
+//     if (hdict_lookup(D,rope_tostring(A))==NULL){
+//         hdict_insert(D, (void*) A, rope_tostring(A));
+//         return A;
+//     }else{
+//         return hdict_lookup(D,rope_tostring(A));
+//     }
+// }
+
+
+// bool key_equal_fn(key e1, key e2)
+//   /*@requires e1 != NULL && e2 != NULL; @*/ 
+// {
+//     return string_equal((string*) e1,(string*) e2);
+// }
+
+// int key_hash_fn(key e1){
+//     string s1 = (string*) e1;
+//     int size = string_length(s1);
+//     if(size == 0) return 0;
+
+//     char[] characters = string_to_chararray(s1);
+//     int sum = 0;
+//     for(int i = 0; i < size; i++)
+//     {
+//      int num1 = char_ord(characters[i]);
+//      sum = 1664525 * (sum + num1) + 1013904223;
+//     }
+//     return sum;
+// }
+
+
+

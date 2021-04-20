@@ -1,0 +1,97 @@
+// Allows you to use I/O functions like print and println
+#use <conio> 
+// Allows you to use string functions like string_join
+#use <string> 
+// Allows you to use utility functions like abs() and min()
+#use <util> 
+
+bool is_substring(string little, string big) {
+  int len = string_length(little);
+  int offset = string_length(big) - len;
+  while (offset >= 0) 
+  //@loop_invariant offset <= string_length(big) - string_length(little);
+  {
+    if (string_equal(little, string_sub(big, offset, offset+len))) return true;
+    offset--;
+  }
+  return false;
+}
+
+int common_prefix(string s1, string s2) 
+//@ensures 0 <= \result && \result <= string_length(s1);
+//@ensures 0 <= \result && \result <= string_length(s2);
+// @ensures string_equal(string_sub(s1, 0, \result), string_sub(s2, 0, \result));
+/*@ensures \result == string_length(s1)
+  @     || \result == string_length(s2)
+  @     || string_charat(s1, \result) != string_charat(s2, \result); @*/
+{
+  int num = 0;
+  string str1;
+  string str2;
+  if (string_length(s1)>string_length(s2)){
+    str1=s2;
+    str2=s1;
+  }else{
+    str1=s1;
+    str2=s2;
+  }
+  while (string_length(str2)!= 0 && string_length(str1)!=0
+    && string_equal(string_sub(str1,0,1),string_sub(str2,0,1))){
+    num+=1;
+    str1=string_sub(str1,1,string_length(str1));
+    str2=string_sub(str2,1,string_length(str2));
+  }
+  return num;
+}
+
+int find_nonrepeating_position(string s)
+//@requires string_length(s) > 0;
+//@requires string_charat(s, 0) != string_charat(s, string_length(s) - 1);
+//@ensures 0 <= \result && \result < string_length(s)-1;
+//@ensures string_charat(s, \result) == string_charat(s, 0);
+//@ensures string_charat(s, \result+1) != string_charat(s, 0);
+{
+  int num = 0;
+  string str = s;
+  string start = string_sub(s,0,1);
+  while (string_equal(start,string_sub(str,num,num+1))){
+    num+=1;
+  }
+  return num-1;
+}
+
+// string same_start_end(string s) 
+// //@ensures is_substring(\result, s);
+// @ensures string_length(s) < 128
+//   @     || (string_length(\result) > 1
+//   @         && string_charat(\result, 0)
+//   @            == string_charat(\result, string_length(\result) - 1)); @
+// {
+//   int num=0;
+//   while (num<(string_length(s)/2) && string_equal(string_sub(s,num,num+1),string_sub(s,string_length(s)-num-1,string_length(s)-num))){
+//     num+=1;
+//   }
+//   return string_sub(s,0,num);
+// }
+
+string same_start_end(string s)
+//@ensures is_substring(\result, s);
+/*@ensures string_length(s) < 128
+  @     || (string_length(\result) > 1
+  @         && string_charat(\result, 0)
+  @            == string_charat(\result, string_length(\result) - 1)); @*/
+{
+  string result;
+  for (int i=0;i<string_length(s)-1;i++){
+    result=string_fromchar(string_charat(s,i));
+    for (int j=i+1;j<string_length(s);j++){
+        result=string_join(result,string_sub(s,j,j+1));
+        if (string_equal(string_sub(s,i,i+1),string_sub(s,j,j+1))){
+            return result;
+            }
+        }
+        result="";
+    }
+    return "";
+ }
+

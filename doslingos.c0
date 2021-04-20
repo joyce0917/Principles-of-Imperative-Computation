@@ -1,0 +1,86 @@
+#use <string>
+
+int count_vocab(string[] vocab, int[] freq, int v, string corpus, bool fast)
+//@requires v==\length(vocab) && v==\length(freq);
+//@requires is_sorted(vocab, 0, v);
+//requires all_distinct(vocab, v);
+{
+    int result = 0;
+    bundle_t corpusbundle = read_words(corpus);
+    string[] corpusarray = string_bundle_array(corpusbundle);
+    int len = string_bundle_length(corpusbundle);
+    int index;
+    for (int i=0;i<len;i++){
+        if (fast){
+            index = binsearch(corpusarray[i],vocab,v);
+        }else{
+            index = linsearch(corpusarray[i],vocab,v);
+        }
+        if (index==-1){
+            result+=1;
+        }else{
+            freq[index]+=1;
+        }
+    }
+
+    return result;
+}
+
+//altered from arrayutil.c0
+bool int_le_seg(int x, int[] A, int lower, int upper) 
+/*@requires 0 <= lower 
+         && lower <= upper 
+         && upper <= \length(A); @*/
+{
+  for (int i = lower; i < upper; i++) 
+    //@loop_invariant lower <= i && i <= upper;
+    {
+      if (x>A[i]) return false;
+    }
+
+  return true;
+}
+
+
+void int_swap(int[] A, int i, int j)
+//@requires 0 <= i && i < \length(A);
+//@requires 0 <= j && j < \length(A);
+{
+  int tmp = A[i];
+  A[i] = A[j];
+  A[j] = tmp;
+}
+
+//from lecture note <05 sort>
+int find_min(int[] A, int lo, int hi)
+//@requires 0 <= lo && lo < hi && hi <= \length(A);
+//@ensures lo <= \result && \result < hi;
+//@ensures int_le_seg(A[\result], A, lo, hi);
+{
+    int min = lo;
+    for (int i = lo+1; i < hi; i++)
+    //@loop_invariant lo <= i && i <= hi;
+    //@loop_invariant lo <= min && min < hi;
+    //@loop_invariant int_le_seg(A[min], A, lo, i);
+    {
+        if (A[i] < A[min]) {
+            min = i;
+        }
+    }
+    return min;
+}
+
+void sort_by_freq(string[] vocab, int[] freq, int v)
+//@requires v == \length(vocab) && v == \length(freq);
+//@ensures is_sorted_int(freq, 0, v);
+{
+    for(int i=0; i<v; i++){
+        int min_index = find_min(freq,i,v);
+        int_swap(freq,i,min_index);
+        swap(vocab,i,min_index);
+    }
+}
+
+
+
+

@@ -1,0 +1,90 @@
+/*
+ * Augment doubly linked lists with row and column information.
+ *
+ * 15-122 Principles of Imperative Computation */ 
+
+/*** Interface ***/
+
+typedef struct editor_header editor;
+struct editor_header {
+  tbuf* buffer;
+  int row;
+  int col;
+};
+
+bool is_editor(editor* E);
+
+editor* editor_new();                  /* Creates a new, empty text buffer */
+void editor_forward(editor* E);        /* Moves the cursor forward (right) */
+void editor_backward(editor* E);       /* Moves the cursor backward (left) */
+void editor_insert(editor* E, char c); /* Insert a character before cursor */
+void editor_delete(editor* B);         /* Remove character before cursor   */
+
+/*** Implementation ***/
+
+
+bool is_editor(editor* E)
+{
+	if (E==NULL) return false;
+	return (E->buffer!=NULL && is_tbuf(E->buffer) 
+				&& E->row==tbuf_row(E->buffer) 
+						&& E->col==tbuf_col(E->buffer));
+}
+
+
+editor* editor_new()
+//@ensures is_editor(\result);
+{
+	editor* a=alloc(editor);
+	a->buffer=tbuf_new();
+	a->row=1;
+	a->col=0;
+	return a;
+}
+
+
+void editor_forward(editor* E)
+//@requires E!=NULL;
+//@requires is_editor(E);
+{
+	if (tbuf_at_right(E->buffer)) return;
+	tbuf_forward(E->buffer);
+	E->row=tbuf_row(E->buffer);
+	E->col=tbuf_col(E->buffer);
+}
+
+
+void editor_backward(editor* E)
+//@requires E!=NULL;
+//@requires is_editor(E);
+{
+	if (tbuf_at_left(E->buffer)) return;
+	tbuf_backward(E->buffer);
+	E->row=tbuf_row(E->buffer);
+	E->col=tbuf_col(E->buffer);	
+}
+
+
+void editor_insert(editor* E, char c)
+//@requires E!=NULL;
+//@requires is_editor(E);
+{
+	tbuf_insert(E->buffer,c);
+	if (c=='\n'){
+		E->row+=1;
+		E->col=0;
+	}else{E->col+=1;}
+}
+
+void editor_delete(editor* E)
+//@requires E!=NULL;
+//@requires is_editor(E);
+{
+	if (tbuf_at_left(E->buffer)) return;
+	tbuf_delete(E->buffer);
+	E->row=tbuf_row(E->buffer);
+	E->col=tbuf_col(E->buffer);		
+}
+
+
+

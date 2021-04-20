@@ -1,0 +1,185 @@
+#use <string>
+#use <conio>
+
+int main() {
+  int result=0;
+  bloom_t new=bloom_new(100);
+  for (int i=0; i<50;i++){
+    string in =string_fromint(i);
+    bloom_add(new,in);
+    assert(new!=NULL);
+    for (int k=0; k<i;k++){
+      string in2 =string_fromint(k);
+      assert(bloom_contains(new,in2)!=false);
+    }
+    string in3 =string_fromint(i+50);
+    if (bloom_contains(new,in3)){
+      result+=1;
+    }
+  }
+  for (int j=58;j<73;j++){
+    string in4=string_fromchar(char_chr(j));
+    bloom_add(new,in4);
+    assert(new!=NULL);
+    for (int k=58; k<j;k++){
+      string in5 =string_fromchar(char_chr(k));
+      assert(bloom_contains(new,in5)!=false);
+    }
+    string in6 =string_fromchar(char_chr(j+20));
+    if (bloom_contains(new,in6)){
+      result+=1;
+    }
+  }
+  bloom_add(new,"");
+  assert(bloom_contains(new,"")!=false);
+  assert(new!=NULL);
+  printint(result);
+  print("\n");
+
+
+
+
+
+
+  bloom_t new2=bloom_new(20);
+  for (int i=0; i<10;i++){
+    string in21 =string_fromint(i);
+    bloom_add(new2,in21);
+    assert(new2!=NULL);
+    for (int k=0; k<i;k++){
+      string in22 =string_fromint(k);
+      assert(bloom_contains(new2,in22)!=false);
+    }
+    string in23 =string_fromint(i+10);
+    if (bloom_contains(new2,in23)){
+      result+=1;
+    }
+  }
+  for (int j=60;j<65;j++){
+    string in24=string_fromchar(char_chr(j));
+    bloom_add(new2,in24);
+    assert(new2!=NULL);
+    for (int k=60; k<j;k++){
+      string in25 =string_fromchar(char_chr(k));
+      assert(bloom_contains(new2,in25)!=false);
+    }
+    string in26 =string_fromchar(char_chr(j+5));
+    if (bloom_contains(new2,in26)){
+      result+=1;
+    }
+  }
+  bloom_add(new2,"");
+  assert(bloom_contains(new2,"")!=false);
+  assert(new2!=NULL);
+  printint(result);
+  print("\n");
+
+
+
+
+
+
+  bloom_t new3=bloom_new(1);
+  bloom_add(new3,"1");
+  assert(new3!=NULL);
+  assert(bloom_contains(new3,"1")!=false);
+  for (int i=10;i<15;i++){
+    string in31 =string_fromint(i);
+    if (bloom_contains(new3,in31)){
+      result+=1;
+    }
+  }
+  assert(new3!=NULL);
+
+  printint(result);
+  print("\n");
+
+
+
+
+
+
+  bloom_t new4=bloom_new(1);
+  bloom_add(new4,"a");
+  assert(new4!=NULL);
+  assert(bloom_contains(new4,"a")!=false);
+  for (int i=60;i<65;i++){
+    string in32 =string_fromchar(char_chr(i));
+    if (bloom_contains(new4,in32)){
+      result+=1;
+    }
+  }
+  assert(new4!=NULL);
+  printint(result);
+  print("\n");
+
+
+
+
+
+
+
+  bloom_t new5=bloom_new(1);
+  bloom_add(new5,"");
+  assert(new5!=NULL);
+  assert(bloom_contains(new5,"")!=false);
+  for (int i=60;i<65;i++){
+    string in33 =string_fromchar(char_chr(i));
+    if (bloom_contains(new5,in33)){
+      result+=1;
+    }
+  }
+  assert(new5!=NULL);
+  printint(result);
+  print("\n");
+
+
+
+
+
+
+
+  bloom_t new6=bloom_new(1);
+  bloom_add(new6,"");
+  assert(new6!=NULL);
+  assert(bloom_contains(new6,"")!=false);
+  for (int i=0;i<5;i++){
+    string in34 =string_fromint(i);
+    if (bloom_contains(new6,in34)){
+      result+=1;
+    }
+  }
+  assert(new6!=NULL);
+  printint(result);
+  print("\n");
+
+
+
+
+
+
+bloom_t new7=bloom_new(40);
+  for (int i=-20; i<50;i++){
+    string in =string_fromint(i);
+    bloom_add(new7,in);
+    assert(new!=NULL);
+    for (int k=-20; k<i;k++){
+      string in2 =string_fromint(k);
+      assert(bloom_contains(new7,in2)!=false);
+      assert(new7!=NULL);
+    }
+  }
+
+  
+  bloom_t new9=bloom_new(1);
+  bloom_add(new9,"\n");
+  assert(new9!=NULL);
+  assert(bloom_contains(new9,"\n")!=false);
+
+
+
+
+  return 100-result;
+}
+
+

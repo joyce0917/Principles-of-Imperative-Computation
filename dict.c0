@@ -1,0 +1,77 @@
+/*
+ * Interface for dictionaries
+ *
+ * 15-122 Principles of Imperative Computation
+ */
+
+#use <string>
+#use <conio>
+#use <parse>
+
+/* Interface to dictionaries (leave this alone) */
+
+// typedef ______* dict_t;
+typedef struct dict_header* dict_t;
+
+// Returns NULL if the input array has the same operator twice
+dict_t dict_new(string[] A, int n)
+  /*@requires \length(A) == n; @*/
+  /*@requires is_infix_array(A, n); @*/ ;
+
+// Returns -1 if no definition is found
+int dict_lookup(dict_t D, string oper)
+  /*@requires D != NULL; @*/ 
+  /*@ensures \result >= -1; @*/ ;
+
+/* Implementation to dictionaries should go here (implement this) */
+
+struct dict_header{
+	int size;
+	int len;
+	string[][] A;
+};
+
+dict_t dict_new(string[] A, int n)
+/*@requires \length(A) == n; @*/
+/*@requires is_infix_array(A, n); @*/
+{
+	dict_t D = alloc(struct dict_header);
+	D->size = n;
+	// string[] d = alloc_array(string,2);
+	D->A=alloc_array(string[],30);
+	int number= 0;
+	for (int i = 0; i<D->size; i++){
+		string[] opers = parse_tokens(A[i]);
+		int len = num_tokens(A[i]);
+		for (int j = 0; j<len; j++){
+			D->A[number] = alloc_array(string,2);
+			D->A[number][0]=opers[j];
+			D->A[number][1]=string_fromint(i);
+			number+=1;
+		}
+	}D->len=number;
+	for (int i=0; i<D->len; i++){
+		for (int j=i+1; j<D->len; j++){
+			if (string_equal(D->A[i][0],D->A[j][0])){
+				return NULL;
+			}
+		}
+	}
+	return D;
+}
+
+
+int dict_lookup(dict_t D, string oper)
+ /*@requires D != NULL; @*/ 
+ /*@ensures \result >= -1; @*/ 
+{
+	for (int i = 0; i<D->len; i++){
+		if (string_equal(D->A[i][0],oper)){
+			int[] result = parse_ints(D->A[i][1],10);
+			return result[0];
+		}
+	}return -1;
+}
+
+
+

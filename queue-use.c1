@@ -1,0 +1,73 @@
+bool even(void* x)
+//@requires \hastag(int*,x);
+{
+	if ((int*)x==NULL) return false;
+	int a=*(int*)x;
+	return (a>=0 && a%2==0);
+}
+
+bool odd(void* x)
+//@requires \hastag(int*,x);
+{
+	if ((int*)x==NULL) return true;
+	int a=*(int*)x;
+	return (a>=0 && a%2==1);
+}
+
+bool incr(void* x)
+//@requires \hastag(int*,x);
+{
+	if (x!=NULL){
+		int* B = (int*) x;
+		int C = *B + 1;
+		*B = C;
+		x = (void*) B;
+	}
+	return true;
+}
+
+void* find_negative(void* accum, void* x)
+//@requires x!=NULL;
+//@requires \hastag(int*,x);
+//@ensures \hastag(int*,\result);
+{
+	if (accum!=NULL) return accum;
+	if (*(int*)x<0) return x;
+	return NULL;
+}
+
+void* copy(void* accum, void* x)
+//@requires \hastag(queue_t,accum);
+//@requires \hastag(int*,x);
+//@ensures \hastag(queue_t,\result);
+{
+	queue_t Q=(queue_t)accum;
+	enq(Q,x);
+	return (void*)Q;
+}
+
+void* insert(void* accum, void* x)
+{
+	int* a = (int*)accum;
+	int* b = (int*)x;
+	int inb = *b;
+	int ina = *a;
+	if (*a < *b) {
+		*a = inb;
+		*b = ina;
+	}
+	return accum;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
